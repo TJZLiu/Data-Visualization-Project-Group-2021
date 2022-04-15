@@ -225,7 +225,7 @@ def plots(countries):
     ex_trace2 = dict(type='scatter',
                      x=df_ps['Year'],
                      y=df_ps['Value']/1000,
-                     name=' Passangers * K',
+                     name=' Passengers * K',
                      )
     ex_data = [ex_trace1, ex_trace2]
 
