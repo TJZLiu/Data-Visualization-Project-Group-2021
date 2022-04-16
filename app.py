@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objs as go
 import plotly.express as px
+from plotly.subplots import make_subplots
 
 # https://htmlcheatsheet.com/css/
 
@@ -137,13 +138,14 @@ def plots(years, countries,type,unit):
 
     year_selected = (dff['Year'] >= years[0]) & (dff['Year'] <= years[1])
     data_map = dff[year_selected]
+    data_map = pd.pivot_table(data_map, values=['Value'], index=['Country', 'Unit','Type'], aggfunc={'Value': sum}).reset_index()
     data_map = data_map[data_map['Type'] == type]
     data_map = data_map[data_map['Unit'] == unit]
 
     if unit == 'Flights':
-        scale = 20000
+        scale = 200000
     else:
-        scale = 2000000
+        scale = 20000000 
 
     fig = go.Figure(go.Scattergeo(locations=data_map.Country, locationmode='country names', marker=dict(
         size=data_map['Value']/scale,color=['mistyrose','steelblue','lemonchiffon','lightsteelblue','wheat',
@@ -151,7 +153,7 @@ def plots(years, countries,type,unit):
                                             'slategrey','rebeccapurple','beige','midnightblue','indigo','lavenderblush',
                                             'rosybrown','gray','lightgoldenrodyellow','dimgray','turquoise','olivedrab',
                                             'indianred','teal', 'lightslategrey','darksalmon','fuchsia','purple',
-                                            'darkslategrey','snow','aqua']),text = data_map[['Year','Type','Unit','Value']] ))
+                                            'darkslategrey','snow','aqua']),text = data_map[['Type','Unit','Value']] ))
     fig.update_layout(mapbox_style="stamen-terrain", mapbox_center_lon=180,
                       geo=dict(scope='europe',
                                       landcolor='white',
@@ -187,7 +189,7 @@ def plots(years,type,unit):
 
     fig = px.treemap(df_treemap, path=[px.Constant("Europe"), 'Country'], values='Value',
                      color='Value', hover_data=['Country'],
-                     color_continuous_scale='RdBu',
+                     color_continuous_scale='speed',
                      color_continuous_midpoint=np.average(df_treemap['Value'], weights=df_treemap['Value']))
     fig.update_layout(margin=dict(t=50, l=25, r=25, b=25),title=dict(text='Treemap'+' '+str(type)+' '
                                                                           +str(unit)+' in '+str(years)))
@@ -204,39 +206,51 @@ def plots(years,type,unit):
     ,
     [
         Input("country_drop", "value"),
+        Input("type_option", "value"),
     ]
 )
-def plots(countries):
+def plots(countries,type):
     ############################################ barline Plot##########################################################
     if countries == 'All Countries':
         df_barline = df
     else:
         df_barline = df[df.Country.isin([countries])]
 
+    df_barline = df_barline[df_barline.Type == type]
     df_barline = pd.pivot_table(df_barline, values=['Value'], index=['Year', 'Unit'], aggfunc={'Value': sum}).reset_index()
     df_fl = df_barline[df_barline['Unit'] == 'Flights']
     df_ps = df_barline[df_barline['Unit'] == 'Passengers']
+    # Create figure with secondary y-axis
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
 
-    ex_trace1 = dict(type='bar',
-                     x=df_fl['Year'],
-                     y=df_fl['Value'] ,
-                     name='Flights'
-                     )
-    ex_trace2 = dict(type='scatter',
-                     x=df_ps['Year'],
-                     y=df_ps['Value']/1000,
-                     name=' Passengers * K',
-                     )
-    ex_data = [ex_trace1, ex_trace2]
+    # Add traces
+    fig.add_trace(
+        go.Bar(x=df_fl['Year'],
+               y=df_fl['Value'],
+               name='Flights'),
+        secondary_y=False,
+    )
 
-    ex_layout = dict(title=dict(text='From 2010 to 2020 Flights and Passengers'+' in '+str(countries)),
-                     xaxis=dict(title='Passangers numbers calculated in thousands of people'),
-                     yaxis=dict(title='Flights & Passengers')
-                     )
+    fig.add_trace(
+        go.Scatter(x=df_ps['Year'],
+                   y=df_ps['Value'],
+                   name=' Passengers'),
+        secondary_y=True,
+    )
 
-    ex_fig = go.Figure(data=ex_data, layout=ex_layout)
+    # Add figure title
+    fig.update_layout(
+        title_text="'Total Flights'+' in '+str(countries)"
+    )
 
-    return ex_fig
+    # Set x-axis title
+    fig.update_xaxes(title_text="Years")
+
+    # Set y-axes titles
+    fig.update_yaxes(title_text="<b>Numbers of Flights</b>", secondary_y=False)
+    fig.update_yaxes(title_text="<b>Numbers of Passengers</b>  ", secondary_y=True)
+
+    return fig
 
 ######################################################4Callbacks#########################################################
 
@@ -252,6 +266,7 @@ def plots(countries):
 def plots(years):
     ############################################ Lines chart##########################################################
 
+
     year_selected = (df['Year'] >= years[0]) & (df['Year'] <= years[1])
 
     df_linechart = df[year_selected]
@@ -259,26 +274,40 @@ def plots(years):
     df_fl = df_linechart[df_linechart['Unit'] == 'Flights']
     df_ps = df_linechart[df_linechart['Unit'] == 'Passengers']
 
-    ex_trace3 = dict(type='scatter',
-                     x=df_fl['Country'],
-                     y=df_fl['Value'],
-                     name='Flights'
-                     )
-    ex_trace4 = dict(type='scatter',
-                     x=df_ps['Country'],
-                     y=df_ps['Value'],
-                     name=' Passangers * K'
-                     )
-    ex_data1 = [ex_trace3, ex_trace4]
 
-    ex_layout1 = dict(title=dict(text='Passengers by Flight by Location'+' in '+str(years)),
-                      xaxis=dict(title='Passangers numbers calculated in thousands of people'),
-                      yaxis=dict(title='Flights & Passengers')
-                      )
 
-    ex_fig1 = go.Figure(data=ex_data1, layout=ex_layout1)
+    # Create figure with secondary y-axis
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
 
-    return ex_fig1
+    # Add traces
+    fig.add_trace(
+        go.Bar(x=df_fl['Country'],
+               y=df_fl['Value'],
+               name='Flights'),
+        secondary_y=False,
+    )
+
+    fig.add_trace(
+        go.Scatter(x=df_ps['Country'],
+                   y=df_ps['Value'],
+                   name=' Passengers'),
+        secondary_y=True,
+    )
+
+    # Add figure title
+    fig.update_layout(
+        title_text='Passengers by Flight by Location'+' in '+str(years)
+    )
+
+    # Set x-axis title
+    fig.update_xaxes(title_text="xaxis title")
+
+    # Set y-axes titles
+    fig.update_yaxes(title_text="<b>Numbers of Flights</b>", secondary_y=False)
+    fig.update_yaxes(title_text="<b>Numbers of Passengers</b>", secondary_y=True)
+
+
+    return fig
 
 
 if __name__ == '__main__':
