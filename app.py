@@ -99,18 +99,18 @@ app.layout = html.Div([
         ], id='Iteraction', style={'width': '30%'}, className='pretty_box'),
         html.Div([
                 dcc.Graph(id='Map'),
-            ], id='MAP', style={'width': '40%'}, className='pretty_box'),
+            ], id='MAP', style={'width': '30%'}, className='pretty_box'),
         html.Div([
             dcc.Graph(id='Barline'),
-        ], id='BARLINE', style={'width': '30%'}, className='pretty_box'),
+        ], id='BARLINE', style={'width': '40%'}, className='pretty_box'),
     ], id='2nd row', style={'display': 'flex'}),
     html.Div([
         html.Div([
             dcc.Graph(id='Treemap'),
-        ], id='TREEMAP', style={'width': '70%'}, className='pretty_box'),
+        ], id='TREEMAP', style={'width': '60%'}, className='pretty_box'),
         html.Div([
             dcc.Graph(id='Lines'),
-        ], id='LINES', style={'width': '30%'}, className='pretty_box')
+        ], id='LINES', style={'width': '40%'}, className='pretty_box')
     ], id='3rd row', style={'display': 'flex'})
 ])
 
@@ -145,7 +145,7 @@ def plots(years, countries,type,unit):
     if unit == 'Flights':
         scale = 200000
     else:
-        scale = 20000000 
+        scale = 20000000
 
     fig = go.Figure(go.Scattergeo(locations=data_map.Country, locationmode='country names', marker=dict(
         size=data_map['Value']/scale,color=['mistyrose','steelblue','lemonchiffon','lightsteelblue','wheat',
@@ -240,7 +240,7 @@ def plots(countries,type):
 
     # Add figure title
     fig.update_layout(
-        title_text="'Total Flights'+' in '+str(countries)"
+        title_text='Total Flights'+' in '+str(countries)
     )
 
     # Set x-axis title
