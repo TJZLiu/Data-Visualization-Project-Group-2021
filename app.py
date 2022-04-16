@@ -70,7 +70,7 @@ server = app.server
 app.layout = html.Div([
 
     html.Div([
-        html.H1('Flight and passenger movements in the Europe'),
+        html.H1('Visual analytics of flight and passenger movements in Europe'),
     ], id='1st row', className='pretty_box'),
     html.Div([
         html.Div([
@@ -163,6 +163,7 @@ def plots(years, countries,type,unit):
     fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0},paper_bgcolor='rgba(0,0,0,0)',
                              plot_bgcolor='rgba(0,0,0,0)')
 
+
     return fig
 
 ######################################################2Callbacks#########################################################
@@ -234,13 +235,13 @@ def plots(countries,type):
     fig.add_trace(
         go.Scatter(x=df_ps['Year'],
                    y=df_ps['Value'],
-                   name=' Passengers'),
+                   name='Passengers'),
         secondary_y=True,
     )
 
     # Add figure title
     fig.update_layout(
-        title_text='Total Flights'+' in '+str(countries)
+        title_text='Flights and Passengers'+' in '+str(countries)
     )
 
     # Set x-axis title
@@ -290,13 +291,13 @@ def plots(years):
     fig.add_trace(
         go.Scatter(x=df_ps['Country'],
                    y=df_ps['Value'],
-                   name=' Passengers'),
+                   name='Passengers'),
         secondary_y=True,
     )
 
     # Add figure title
     fig.update_layout(
-        title_text='Passengers by Flight by Location'+' in '+str(years)
+        title_text='Flights and Passengers'+' in '+str(years)
     )
 
     # Set x-axis title
