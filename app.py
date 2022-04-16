@@ -300,8 +300,6 @@ def plots(years):
         title_text='Flights and Passengers'+' in '+str(years)
     )
 
-    # Set x-axis title
-    fig.update_xaxes(title_text="xaxis title")
 
     # Set y-axes titles
     fig.update_yaxes(title_text="<b>Numbers of Flights</b>", secondary_y=False)
