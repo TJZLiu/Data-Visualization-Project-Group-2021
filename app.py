@@ -262,15 +262,17 @@ def plots(countries,type):
     ,
     [
         Input("year_slider", "value"),
+        Input("type_option", "value"),
     ]
 )
-def plots(years):
+def plots(years,type):
     ############################################ Lines chart##########################################################
 
 
     year_selected = (df['Year'] >= years[0]) & (df['Year'] <= years[1])
 
     df_linechart = df[year_selected]
+    df_linechart = df_linechart[df_linechart.Type == type]
     df_linechart = pd.pivot_table(df_linechart, values=['Value'], index=['Country', 'Unit'], aggfunc={'Value': sum}).reset_index()
     df_fl = df_linechart[df_linechart['Unit'] == 'Flights']
     df_ps = df_linechart[df_linechart['Unit'] == 'Passengers']
