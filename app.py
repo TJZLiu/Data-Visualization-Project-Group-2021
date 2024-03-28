@@ -90,9 +90,6 @@ app.layout = html.Div([
                 html.Img(src=app.get_asset_url('10001.png'),style={'margin': '3%'}),
                 html.Br(),
                 dcc.Markdown("""\
-                  - Gabriel Felipe Martins de Souza, m20210598.   
-                  - Luiz Humberto Polaro Vizeu, m20210554.
-                  - Rogério Domingos Paulo, m20210597.  
                 """, style={"text-align": "center", "font-size": "10pt",'justify':"center",'padding-top': '10%',
                             'padding-bottom': '5%','align':"center",'vertical-align':'middle'}),
             ], style={'display': 'flex'})
